@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  user_db:
+    image: postgres
+    container_name: user_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: userservice
+    ports:
+      - "5433:5432"
+    volumes:
+      - userservice-db:/var/lib/postgresql/data
+    networks:
+      my_network:
+
+
+  user_service:
+    build:
+      context: ./UserService
+      dockerfile: ./Dockerfile
+    container_name: user_service
+    ports:
+      - "8090:8080"
+    environment:
+      - DB_IP=user_db
+      - DB_PORT=5432
+      - DB_DBNAME=userservice
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+    networks:
+      my_network:
+
+
+  device_db:
+    image: postgres
+    container_name: device_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: deviceservice
+    ports:
+      - "5434:5432"
+    volumes:
+      - deviceservice-db:/var/lib/postgresql/data
+    networks:
+      my_network:
+
+
+  device_service:
+    build:
+      context: ./DeviceService
+      dockerfile: ./Dockerfile
+    container_name: device_service
+    ports:
+      - "8091:8081"
+    environment:
+      - DB_IP=device_db
+      - DB_PORT=5432
+      - DB_DBNAME=deviceservice
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+    networks:
+      my_network:
+
+
+volumes:
+  userservice-db:
+  deviceservice-db:
+
+
+networks:
+  my_network:
+    external: true
