@@ -66,10 +66,43 @@ services:
     networks:
       my_network:
 
+  authentication_db:
+    image: postgres
+    container_name: authentication_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: authenticationservice
+    ports:
+      - "5435:5432"
+    volumes:
+      - authenticationservice-db:/var/lib/postgresql/data
+    networks:
+      my_network:
+
+
+  authentication_service:
+    build:
+      context: ./AuthenticationService
+      dockerfile: ./Dockerfile
+    container_name: authentication_service
+    ports:
+      - "8092:8082"
+    environment:
+      - DB_IP=authentication_db
+      - DB_PORT=5432
+      - DB_DBNAME=authenticationservice
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+    networks:
+      my_network:
+
 
 volumes:
   userservice-db:
   deviceservice-db:
+  authenticationservice-db:
 
 
 networks:

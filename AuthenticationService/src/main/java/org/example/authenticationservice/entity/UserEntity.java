@@ -1,4 +1,4 @@
-package org.example.userservice.entity;
+package org.example.authenticationservice.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,24 +14,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     @NotNull
-    private String firstName;
-    @Column
-    @NotNull
-    private String lastName;
+    private String username;
 
     @Column
     @NotNull
-    private String email;
+    private String password;
+
     @Column
     @NotNull
-    private String telephone;
-    @Column
-    @NotNull
-    private String address;
+    @Enumerated(EnumType.STRING)
+    private Roles role;
 
 }
