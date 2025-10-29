@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
@@ -15,23 +16,21 @@ import java.util.Map;
 public class JwtService {
     private final Key key;
     private final long accessTtlMillis;
-    private final long refreshTtlMillis;
 
     public JwtService(
             @Value("${application.secret}") String secret,
             @Value("${jwt.expiration}") long expMillis
     ) {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTtlMillis = expMillis * 60_000L;
-        this.refreshTtlMillis = 7 * 24L * 60L * 60L * 1000L;
     }
 
-    public String generateAccess(String username, String role) {
+    public String generateAccess(String username, String role, Long id) {
         var now = Instant.now();
         return Jwts.builder()
-                .setSubject(username)
-                .setClaims(Map.of("role", role))
-                .setIssuedAt(Date.from(now))
+                .claim("username", username)
+                .claim("role", role)
+                .claim("id", id)
                 .setExpiration(Date.from(now.plusMillis(accessTtlMillis)))
                 .signWith(key)
                 .compact();

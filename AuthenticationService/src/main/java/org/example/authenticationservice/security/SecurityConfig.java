@@ -37,12 +37,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        //oricine
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+
+                        //ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/auth/getall").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/auth/**").hasRole("ADMIN")
 
                         // orice altceva protejat
-                        .anyRequest().authenticated()
+                        .anyRequest().denyAll()
                 )
                 .addFilterBefore(new JwtFilter(jwtService), BasicAuthenticationFilter.class)
                 .build();
