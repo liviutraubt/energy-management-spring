@@ -52,4 +52,14 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/register-admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest registerRequest) {
+        try{
+            return ResponseEntity.ok(userService.adminRegisterUser(registerRequest));
+        }
+        catch(Exception e){
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

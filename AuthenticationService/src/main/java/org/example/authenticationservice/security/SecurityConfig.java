@@ -44,6 +44,7 @@ public class SecurityConfig {
                         //ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/auth/getall").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/auth/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register-admin").hasRole("ADMIN")
 
                         // orice altceva protejat
                         .anyRequest().denyAll()

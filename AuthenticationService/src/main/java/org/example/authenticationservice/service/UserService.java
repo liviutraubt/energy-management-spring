@@ -57,4 +57,19 @@ public class UserService {
         }
         return id;
     }
+
+    public Long adminRegisterUser(RegisterRequest registerRequest) {
+        if(userRepository.existsByUsername(registerRequest.username())){
+            throw new RuntimeException("Username already exists");
+        }
+
+        var user = UserEntity.builder()
+                .username(registerRequest.username())
+                .password(encoder.encode(registerRequest.password()))
+                .role(registerRequest.role())
+                .build();
+
+        userRepository.save(user);
+        return user.getId();
+    }
 }
