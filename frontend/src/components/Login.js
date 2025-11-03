@@ -1,30 +1,26 @@
 import React, { useState } from 'react';
 import { login } from '../apiService';
-import { useNavigate } from 'react-router-dom'; // 1. Importă useNavigate
-
+import { useNavigate } from 'react-router-dom';
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // 2. Inițializează hook-ul
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null); // Resetează eroarea
+        setError(null);
 
         try {
-            // 3. Funcția de login este apelată
             const userData = await login(username, password);
 
             console.log('Login reușit:', userData);
 
-            // 4. Redirecționează pe bază de rol
             if (userData.role === 'ADMIN') {
                 navigate('/admin');
-            } else if (userData.role === 'USER') { // Am actualizat la 'USER' conform discuției
+            } else if (userData.role === 'USER') {
                 navigate('/client');
             } else {
-                // Fallback, deși nu ar trebui să ajungă aici
                 navigate('/');
             }
 

@@ -17,7 +17,6 @@ function Layout() {
                 <button onClick={handleLogout}>Logout</button>
             </nav>
             <main style={{ padding: '20px' }}>
-                {/* Aici vor fi randate paginile (Admin sau Client) */}
                 <Outlet />
             </main>
         </div>
