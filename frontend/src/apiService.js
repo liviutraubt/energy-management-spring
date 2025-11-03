@@ -111,7 +111,7 @@ const createUser = async (userData) => {
         }
 
         await apiClient.post('/user', {
-            id: newUserId, // Folosim ID-ul de la Pasul 1
+            id: newUserId,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
@@ -120,7 +120,7 @@ const createUser = async (userData) => {
         });
 
         await apiClient.post('/device/user', {
-            id: newUserId // Folosim același ID
+            id: newUserId
         });
 
         return { success: true, user: { ...userData, id: newUserId } };
@@ -128,6 +128,38 @@ const createUser = async (userData) => {
     } catch (error) {
         console.error("Eroare la crearea utilizatorului în 3 pași:", error);
 
+        throw error;
+    }
+};
+
+const updateUser = async (userId, userData) => {
+    try {
+        const response = await apiClient.put(`/user/${userId}`, {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            telephone: userData.telephone,
+            address: userData.address
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`Eroare la actualizarea utilizatorului ${userId}:`, error);
+        throw error;
+    }
+};
+
+const deleteUser = async (userId) => {
+    try {
+        await apiClient.delete(`/user/${userId}`);
+
+        await apiClient.delete(`/device/user/${userId}`);
+
+        await apiClient.delete(`/auth/${userId}`);
+
+        return { success: true, deletedId: userId };
+
+    } catch (error) {
+        console.error(`Eroare la ștergerea utilizatorului ${userId}:`, error);
         throw error;
     }
 };
@@ -141,4 +173,6 @@ export {
     getDevicesForUser,
     getAllUsers,
     createUser,
+    updateUser,
+    deleteUser,
 };
