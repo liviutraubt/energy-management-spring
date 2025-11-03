@@ -6,7 +6,7 @@ http:
         - web
       service: user-service
       middlewares:
-        -auth-guard
+        - auth-guard
 
     device-api:
       rule: "Host(`localhost`) && PathPrefix(`/api/device`)" 
@@ -14,7 +14,7 @@ http:
         - web
       service: device-service
       middlewares:
-        -auth-guard
+        - auth-guard
 
     authentication-api:
       rule: "Host(`localhost`) && PathPrefix(`/api/auth`)" 
@@ -28,7 +28,7 @@ http:
         address: "http://authentication_service:8083/api/auth/validate"
         trustForwardHeader: true
         authRequestHeaders:
-          - Authorization
+          - app-auth
 
 
   services:
