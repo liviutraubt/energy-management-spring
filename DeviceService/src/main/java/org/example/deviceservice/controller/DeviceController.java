@@ -35,7 +35,12 @@ public class DeviceController {
 
     @PostMapping("/user")
     public ResponseEntity<?> insertUser(@RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(deviceService.insertUser(userDTO));
+        try{
+            return ResponseEntity.ok(deviceService.insertUser(userDTO));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/user/{id}")
@@ -67,5 +72,10 @@ public class DeviceController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<List<DeviceDTO>> findDeviceByUserId(@PathVariable Long id) {
+        return ResponseEntity.ok(deviceService.findDevicesByUserId(id));
     }
 }

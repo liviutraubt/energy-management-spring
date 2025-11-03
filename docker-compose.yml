@@ -1,110 +1,123 @@
 version: '3'
 
 services:
-  user_db:
+  db_user:
     image: postgres
-    container_name: user_db
+    container_name: db_user
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: userservice
+      POSTGRES_DB: user_service_db
     ports:
       - "5433:5432"
     volumes:
-      - userservice-db:/var/lib/postgresql/data
+      - db-user:/var/lib/postgresql
     networks:
-      my_network:
+      SD_Network:
 
-
-  user_service:
+  userservice:
     build:
       context: ./UserService
       dockerfile: ./Dockerfile
-    container_name: user_service
-    ports:
-      - "8090:8080"
-    environment:
-      - DB_IP=user_db
-      - DB_PORT=5432
-      - DB_DBNAME=userservice
-      - DB_USER=postgres
-      - DB_PASSWORD=root
-    networks:
-      my_network:
-
-
-  device_db:
-    image: postgres
-    container_name: device_db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: deviceservice
-    ports:
-      - "5434:5432"
-    volumes:
-      - deviceservice-db:/var/lib/postgresql/data
-    networks:
-      my_network:
-
-
-  device_service:
-    build:
-      context: ./DeviceService
-      dockerfile: ./Dockerfile
-    container_name: device_service
+    container_name: userservice
     ports:
       - "8091:8081"
     environment:
-      - DB_IP=device_db
+      - DB_IP=db_user
       - DB_PORT=5432
-      - DB_DBNAME=deviceservice
+      - DB_DBNAME=user_service_db
       - DB_USER=postgres
       - DB_PASSWORD=root
     networks:
-      my_network:
+      SD_Network:
 
-  authentication_db:
+  db_device:
     image: postgres
-    container_name: authentication_db
+    container_name: db_device
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: authenticationservice
+      POSTGRES_DB: device_service_db
     ports:
-      - "5435:5432"
+      - "5434:5432"
     volumes:
-      - authenticationservice-db:/var/lib/postgresql/data
+      - db-device:/var/lib/postgresql
     networks:
-      my_network:
+      SD_Network:
 
-
-  authentication_service:
+  deviceservice:
     build:
-      context: ./AuthenticationService
+      context: ./DeviceService
       dockerfile: ./Dockerfile
-    container_name: authentication_service
+    container_name: deviceservice
     ports:
       - "8092:8082"
     environment:
-      - DB_IP=authentication_db
+      - DB_IP=db_device
       - DB_PORT=5432
-      - DB_DBNAME=authenticationservice
+      - DB_DBNAME=device_service_db
       - DB_USER=postgres
       - DB_PASSWORD=root
     networks:
-      my_network:
+      SD_Network: 
 
+  db_authentication:
+    image: postgres
+    container_name: db_authentication
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: authentication_service_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - db-authentication:/var/lib/postgresql
+    networks:
+      SD_Network:
+
+  authenticationservice:
+    build:
+      context: ./AuthenticationService
+      dockerfile: ./Dockerfile
+    container_name: authenticationservice
+    ports:
+      - "8093:8083"
+    environment:
+      - DB_IP=db_authentication
+      - DB_PORT=5432
+      - DB_DBNAME=authentication_service_db
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+    networks:
+      SD_Network:
+
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    ports:
+      - "81:80" 
+      - "8081:8080" 
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" 
+      - "./traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./dynamic:/etc/traefik/dynamic:ro" 
+      - "./logs:/var/log/traefik"
+    develop: 
+      watch:
+       - path: ./dynamic                  
+         action: restart
+    networks:
+      SD_Network:   
 
 volumes:
-  userservice-db:
-  deviceservice-db:
-  authenticationservice-db:
-
+  db-user:
+  db-device:
+  db-authentication:
 
 networks:
-  my_network:
+  SD_Network:
     external: true
