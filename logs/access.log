@@ -10,3 +10,4 @@
 172.19.0.1 - - [30/Oct/2025:12:41:29 +0000] "GET /api/user HTTP/1.1" 200 141 "-" "-" 6 "user-api@file" "http://user_service:8081" 548ms
 172.19.0.1 - - [30/Oct/2025:12:41:52 +0000] "POST /api/auth/login HTTP/1.1" 200 177 "-" "-" 7 "authentication-api@file" "http://authentication_service:8083" 718ms
 172.19.0.1 - - [30/Oct/2025:12:42:23 +0000] "GET /api/auth/getall HTTP/1.1" 200 44 "-" "-" 8 "authentication-api@file" "http://authentication_service:8083" 120ms
+172.19.0.1 - - [03/Nov/2025:10:06:04 +0000] "GET /api/device HTTP/1.1" 200 2 "-" "-" 1 "device-api@file" "http://device_service:8082" 206ms

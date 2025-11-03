@@ -8,7 +8,7 @@ import org.example.authenticationservice.entity.Roles;
 import org.example.authenticationservice.entity.UserEntity;
 import org.example.authenticationservice.mapper.UserMapper;
 import org.example.authenticationservice.repository.UserRepository;
-import org.example.authenticationservice.security.JwtService;
+import org.example.authenticationservice.security.JwtTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
-    private final JwtService jwt;
+    private final JwtTokenService jwt;
 
     public Long registerUser(RegisterRequest registerRequest) {
         if(userRepository.existsByUsername(registerRequest.username())){
@@ -37,13 +37,14 @@ public class UserService {
         return user.getId();
     }
 
-    public String login(LoginRequest loginRequest) {
-        var user = userRepository.findByUsername(loginRequest.username()).orElseThrow(() -> new RuntimeException("Username not found"));
-        if(!encoder.matches(loginRequest.password(), user.getPassword())){
-            throw new RuntimeException("Passwords don't match");
+    public UserDTO login(LoginRequest loginRequest) {
+        UserEntity user = userRepository.findByUsername(loginRequest.username()).orElseThrow(() -> new RuntimeException("Username not found"));
+        if(encoder.matches(loginRequest.password(), user.getPassword()) && user != null) {
+            userRepository.save(user);
+            return userMapper.userEntityToUserDTO(user);
         }
-        var access = jwt.generateAccess(user.getUsername(), String.valueOf(user.getRole()), user.getId());
-        return access;
+
+        return null;
     }
 
     public List<UserDTO> getUsers() {return userMapper.userEntityToUserDTO(userRepository.findAll());}
