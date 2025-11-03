@@ -1,5 +1,27 @@
 http:
   middlewares:
+    
+    cors-headers:
+      headers:
+        accessControlAllowOriginList:
+          - "http://localhost:3000"
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "PATCH"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "app-auth"
+          - "Origin"
+          - "Accept"
+        accessControlAllowCredentials: true
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+    
     auth-fw:
       forwardAuth:
         address: "http://authenticationservice:8083/validate"
@@ -14,6 +36,7 @@ http:
         - web
       service: user-service
       middlewares:
+        - cors-headers
         - auth-fw
       
     device-api:
@@ -22,6 +45,7 @@ http:
           - web 
         service: device-service
         middlewares:
+          - cors-headers
           - auth-fw
         
     authentication-api:
@@ -29,6 +53,8 @@ http:
         entryPoints:
           - web
         service: authentication-service
+        middlewares:
+          - cors-headers
 
   services:
     user-service:

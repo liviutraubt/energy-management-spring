@@ -91,10 +91,22 @@ const isLoggedIn = () => {
     }
 };
 
+const getDevicesForUser = async (userId) => {
+    try {
+        // Endpoint-ul este /api/device/{id}
+        const response = await apiClient.get(`/device/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Eroare la preluarea device-urilor pentru user ${userId}:`, error);
+        throw error;
+    }
+};
+
 export {
     apiClient,
     login,
     logout,
-    getCurrentUser, // exportă funcția nouă
-    isLoggedIn,     // exportă funcția nouă
+    getCurrentUser,
+    isLoggedIn,
+    getDevicesForUser,
 };
