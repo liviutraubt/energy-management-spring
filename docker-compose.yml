@@ -1,102 +1,98 @@
 version: '3'
 
 services:
-  user_db:
+  db_user:
     image: postgres
-    container_name: user_db
+    container_name: db_user
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: userservice
+      POSTGRES_DB: user_service_db
     ports:
       - "5433:5432"
     volumes:
-      - userservice-db:/var/lib/postgresql
+      - db-user:/var/lib/postgresql
     networks:
-      my_network:
+      SD_Network:
 
-
-  user_service:
+  userservice:
     build:
       context: ./UserService
       dockerfile: ./Dockerfile
-    container_name: user_service
+    container_name: userservice
     ports:
       - "8091:8081"
     environment:
-      - DB_IP=user_db
+      - DB_IP=db_user
       - DB_PORT=5432
-      - DB_DBNAME=userservice
+      - DB_DBNAME=user_service_db
       - DB_USER=postgres
       - DB_PASSWORD=root
     networks:
-      my_network:
+      SD_Network:
 
-
-  device_db:
+  db_device:
     image: postgres
-    container_name: device_db
+    container_name: db_device
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: deviceservice
+      POSTGRES_DB: device_service_db
     ports:
       - "5434:5432"
     volumes:
-      - deviceservice-db:/var/lib/postgresql
+      - db-device:/var/lib/postgresql
     networks:
-      my_network:
+      SD_Network:
 
-
-  device_service:
+  deviceservice:
     build:
       context: ./DeviceService
       dockerfile: ./Dockerfile
-    container_name: device_service
+    container_name: deviceservice
     ports:
       - "8092:8082"
     environment:
-      - DB_IP=device_db
+      - DB_IP=db_device
       - DB_PORT=5432
-      - DB_DBNAME=deviceservice
+      - DB_DBNAME=device_service_db
       - DB_USER=postgres
       - DB_PASSWORD=root
     networks:
-      my_network:
+      SD_Network: 
 
-  authentication_db:
+  db_authentication:
     image: postgres
-    container_name: authentication_db
+    container_name: db_authentication
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: authenticationservice
+      POSTGRES_DB: authentication_service_db
     ports:
       - "5435:5432"
     volumes:
-      - authenticationservice-db:/var/lib/postgresql
+      - db-authentication:/var/lib/postgresql
     networks:
-      my_network:
+      SD_Network:
 
-
-  authentication_service:
+  authenticationservice:
     build:
       context: ./AuthenticationService
       dockerfile: ./Dockerfile
-    container_name: authentication_service
+    container_name: authenticationservice
     ports:
       - "8093:8083"
     environment:
-      - DB_IP=authentication_db
+      - DB_IP=db_authentication
       - DB_PORT=5432
-      - DB_DBNAME=authenticationservice
+      - DB_DBNAME=authentication_service_db
       - DB_USER=postgres
       - DB_PASSWORD=root
     networks:
-      my_network:
+      SD_Network:
 
   traefik:
     image: traefik:v3.0
@@ -106,24 +102,22 @@ services:
       - "81:80" 
       - "8081:8080" 
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro" # Traefik can listen to the Docker events
-      - "./traefik.yml:/etc/traefik/traefik.yml:ro" # Static configuration file
-      - "./dynamic:/etc/traefik/dynamic:ro" # Dynamic configuration files
-      - "./logs:/var/log/traefik" # Log files
-    develop:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" 
+      - "./traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./dynamic:/etc/traefik/dynamic:ro" 
+      - "./logs:/var/log/traefik"
+    develop: 
       watch:
-       - path: ./dynamic                   # watch the whole folder
+       - path: ./dynamic                  
          action: restart
     networks:
-      my_network:
-
+      SD_Network:   
 
 volumes:
-  userservice-db:
-  deviceservice-db:
-  authenticationservice-db:
-
+  db-user:
+  db-device:
+  db-authentication:
 
 networks:
-  my_network:
+  SD_Network:
     external: true

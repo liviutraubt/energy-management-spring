@@ -7,6 +7,7 @@ import org.example.authenticationservice.dto.LoginRequest;
 import org.example.authenticationservice.dto.RegisterRequest;
 import org.example.authenticationservice.dto.UserDTO;
 import org.example.authenticationservice.security.JwtTokenService;
+import org.example.authenticationservice.security.annotations.AllowAdmin;
 import org.example.authenticationservice.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,12 +57,14 @@ public class UserController {
     }
 
     @GetMapping("/getall")
+    @AllowAdmin
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> userList = userService.getUsers();
         return ResponseEntity.ok(userList);
     }
 
     @DeleteMapping("/{id}")
+    @AllowAdmin
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try{
             return ResponseEntity.ok(userService.deleteUser(id));
@@ -72,6 +75,7 @@ public class UserController {
     }
 
     @PostMapping("/register-admin")
+    @AllowAdmin
     public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest registerRequest) {
         try{
             return ResponseEntity.ok(userService.adminRegisterUser(registerRequest));

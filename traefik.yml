@@ -13,12 +13,11 @@ entryPoints:
   web:
     address: ":80"
 
-
 providers:
   docker:
     exposedByDefault: false
-    network: my_network
-  
+    network: SD_Network
+
   file:
     directory: "/etc/traefik/dynamic"
-    watch: true
+    watch: true 

@@ -20,7 +20,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
-    private final JwtTokenService jwt;
 
     public Long registerUser(RegisterRequest registerRequest) {
         if(userRepository.existsByUsername(registerRequest.username())){
@@ -33,8 +32,7 @@ public class UserService {
                 .role(Roles.USER)
                 .build();
 
-        userRepository.save(user);
-        return user.getId();
+        return userRepository.save(user).getId();
     }
 
     public UserDTO login(LoginRequest loginRequest) {

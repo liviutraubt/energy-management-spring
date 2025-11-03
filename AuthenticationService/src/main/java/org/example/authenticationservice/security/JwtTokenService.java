@@ -37,12 +37,6 @@ public class JwtTokenService {
     @Value("${application.secret}")
     private String secret;
 
-    /**
-     * Extracts authentication details from the JWT in the request header.
-     *
-     * @param request HTTP request containing the JWT
-     * @return Spring Security Authentication if token is valid
-     */
     public Authentication getAuthentication(final HttpServletRequest request) {
         String token = extractTokenFromRequest(request);
 
@@ -70,13 +64,6 @@ public class JwtTokenService {
         }
     }
 
-    /**
-     * Creates a JWT token with user ID and roles.
-     *
-     * @param username the username of the user
-     * @param role  the user role
-     * @return a signed JWT token
-     */
     public String createJwtToken(final String username, final Roles role, final Long id) {
         return Jwts.builder()
                 .claim(CLAIM_USER, username)
@@ -87,24 +74,15 @@ public class JwtTokenService {
                 .compact();
     }
 
-    /**
-     * Returns the HMAC signing key.
-     */
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
-     * Extracts the JWT token from the HTTP request.
-     */
     private String extractTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
         return (token != null && !token.isBlank()) ? token : null;
     }
 
-    /**
-     * Parses the JWT token and returns its claims.
-     */
     private Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -113,18 +91,12 @@ public class JwtTokenService {
                 .getBody();
     }
 
-    /**
-     * Extracts the username claim from the token.
-     */
     private String extractUsername(Claims claims) {
         return Optional.ofNullable(claims.get(CLAIM_USER))
                 .map(Object::toString)
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("No username found in JWT"));
     }
 
-    /**
-     * Extracts a single role from the token (assumes only one).
-     */
     private String extractSingleRole(Claims claims) {
         return Optional.ofNullable(claims.get(CLAIM_ROLE))
                 .map(Object::toString)

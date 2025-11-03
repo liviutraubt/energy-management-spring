@@ -40,6 +40,9 @@ public class DeviceService {
     }
 
     public Long insertUser(UserDTO userDTO) {
+        if(userRepository.existsById(userDTO.getId())) {
+            throw new RuntimeException("User already exists!");
+        }
         UserEntity userEntity = userMapper.userDTOToUserEntity(userDTO);
 
         return userRepository.save(userEntity).getId();
@@ -68,5 +71,9 @@ public class DeviceService {
         deviceMapper.updateDeviceEntityFromDeviceDTO(deviceDTO, deviceEntity);
 
         return deviceId;
+    }
+
+    public List<DeviceDTO> findDevicesByUserId(Long userId) {
+        return deviceMapper.deviceEntityToDeviceDTO(deviceRepository.findByUserId(userId));
     }
 }

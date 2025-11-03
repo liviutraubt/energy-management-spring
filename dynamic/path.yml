@@ -1,48 +1,47 @@
 http:
+  middlewares:
+    auth-fw:
+      forwardAuth:
+        address: "http://authenticationservice:8083/validate"
+        trustForwardHeader: true
+        authRequestHeaders:
+         - "app-auth"
+  
   routers:
     user-api:
-      rule: "Host(`localhost`) && PathPrefix(`/api/user`)" 
+      rule: "Host(`localhost`) && PathPrefix(`/api/user`)"
       entryPoints:
         - web
       service: user-service
       middlewares:
-        - auth-guard
-
+        - auth-fw
+      
     device-api:
-      rule: "Host(`localhost`) && PathPrefix(`/api/device`)" 
-      entryPoints:
-        - web
-      service: device-service
-      middlewares:
-        - auth-guard
-
+        rule: "Host(`localhost`) && PathPrefix(`/api/device`)"
+        entryPoints:
+          - web 
+        service: device-service
+        middlewares:
+          - auth-fw
+        
     authentication-api:
-      rule: "Host(`localhost`) && PathPrefix(`/api/auth`)" 
-      entryPoints:
-        - web
-      service: authentication-service
-
-  middlewares:
-    auth-guard:
-      forwardAuth:
-        address: "http://authentication_service:8083/api/auth/validate"
-        trustForwardHeader: true
-        authRequestHeaders:
-          - app-auth
-
+        rule: "Host(`localhost`) && PathPrefix(`/api/auth`)"
+        entryPoints:
+          - web
+        service: authentication-service
 
   services:
     user-service:
       loadBalancer:
         servers:
-          - url: "http://user_service:8081" 
+          - url: "http://userservice:8081" 
 
     device-service:
       loadBalancer:
         servers:
-          - url: "http://device_service:8082"
-
+          - url: "http://deviceservice:8082" 
+      
     authentication-service:
       loadBalancer:
         servers:
-          - url: "http://authentication_service:8083"
+          - url: "http://authenticationservice:8083" 

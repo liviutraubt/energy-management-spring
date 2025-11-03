@@ -10,11 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-/**
- * the security configuration for local
- *
- * @author slimboi
- */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfigDefault {
@@ -25,7 +20,7 @@ public class SecurityConfigDefault {
                 .authorizeHttpRequests(requests ->
                         requests
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                .requestMatchers("/api/auth/register","/api/auth/login", "/api/auth/healthcheck","/api/auth/validate").permitAll()
+                                .requestMatchers("/api/auth/register","/api/auth/login", "/api/auth/healthcheck","/validate").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter(), BasicAuthenticationFilter.class);

@@ -51,7 +51,6 @@ public class PolicyService {
 // --- CATCH-ALL: orice alt endpoint sub /api/users/** e tot ADMIN-only
             new Rule("*",      "/api/user/**", Set.of(Roles.ADMIN))
 
-            
     );
 
     public boolean isAllowed(String method, String uri, Set<Roles> userRoles) {
