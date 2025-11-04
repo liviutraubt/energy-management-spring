@@ -1,4 +1,4 @@
-FROM maven:3.9 AS build
+FROM maven:3.9.7-eclipse-temurin-21 AS build
 
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -11,7 +11,7 @@ COPY ./src/ /user_service/src
 WORKDIR /user_service
 RUN mvn clean install -DskipTests
 
-FROM openjdk:21-jdk
+FROM eclipse-temurin:21-jre
 WORKDIR /user_service
 COPY --from=build /user_service/target/*.jar /user_service/user_service.jar
 EXPOSE 8081
