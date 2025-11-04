@@ -164,6 +164,56 @@ const deleteUser = async (userId) => {
     }
 };
 
+const getAllDevices = async () => {
+    try {
+        const response = await apiClient.get('/device');
+        return response.data;
+    } catch (error) {
+        console.error('Eroare la preluarea device-urilor:', error);
+        throw error;
+    }
+};
+
+const createDevice = async (deviceData) => {
+    try {
+        const response = await apiClient.post('/device', {
+            device_type: deviceData.device_type,
+            consumption: deviceData.consumption,
+            active: deviceData.active,
+            user: { id: deviceData.userId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Eroare la crearea device-ului:', error);
+        throw error;
+    }
+};
+
+const updateDevice = async (deviceId, deviceData) => {
+    try {
+        const response = await apiClient.put(`/device/${deviceId}`, {
+            device_type: deviceData.device_type,
+            consumption: deviceData.consumption,
+            active: deviceData.active,
+            user: { id: deviceData.userId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`Eroare la actualizarea device-ului ${deviceId}:`, error);
+        throw error;
+    }
+};
+
+const deleteDevice = async (deviceId) => {
+    try {
+        await apiClient.delete(`/device/${deviceId}`);
+        return { success: true, deletedId: deviceId };
+    } catch (error) {
+        console.error(`Eroare la ștergerea device-ului ${deviceId}:`, error);
+        throw error;
+    }
+};
+
 export {
     apiClient,
     login,
@@ -175,4 +225,8 @@ export {
     createUser,
     updateUser,
     deleteUser,
+    getAllDevices,
+    createDevice,
+    updateDevice,
+    deleteDevice,
 };
