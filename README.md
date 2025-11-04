@@ -46,6 +46,7 @@ Acest proiect necesită o rețea Docker externă numită `SD_Network` pentru a p
 
 ```bash
 docker network create SD_Network
+```
 
 ### 2. Pornirea Aplicației
 Din directorul rădăcină al proiectului (unde se află `docker-compose.yml`), rulați comanda de mai jos. Aceasta va construi imaginile pentru fiecare serviciu și va porni toate containerele.
