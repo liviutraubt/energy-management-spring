@@ -1,5 +1,27 @@
 http:
   middlewares:
+    
+    cors-headers:
+      headers:
+        accessControlAllowOriginList:
+          - "http://localhost:3000"
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "PATCH"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "app-auth"
+          - "Origin"
+          - "Accept"
+        accessControlAllowCredentials: true
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+    
     auth-fw:
       forwardAuth:
         address: "http://authenticationservice:8083/validate"
@@ -8,12 +30,21 @@ http:
          - "app-auth"
   
   routers:
+
+    frontend-app:
+      rule: "Host(`localhost`) && PathPrefix(`/`)"
+      entryPoints:
+        - web
+      service: frontend-service
+      priority: 1
+
     user-api:
       rule: "Host(`localhost`) && PathPrefix(`/api/user`)"
       entryPoints:
         - web
       service: user-service
       middlewares:
+        - cors-headers
         - auth-fw
       
     device-api:
@@ -22,6 +53,7 @@ http:
           - web 
         service: device-service
         middlewares:
+          - cors-headers
           - auth-fw
         
     authentication-api:
@@ -29,8 +61,15 @@ http:
         entryPoints:
           - web
         service: authentication-service
+        middlewares:
+          - cors-headers
 
   services:
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"
+
     user-service:
       loadBalancer:
         servers:
