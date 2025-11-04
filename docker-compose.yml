@@ -94,6 +94,15 @@ services:
     networks:
       SD_Network:
 
+  frontend:
+    build:
+      context: ./frontend 
+      dockerfile: ./Dockerfile
+    container_name: frontend
+    restart: always
+    networks:
+      - SD_Network
+
   traefik:
     image: traefik:v3.0
     container_name: traefik

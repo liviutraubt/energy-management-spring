@@ -30,6 +30,14 @@ http:
          - "app-auth"
   
   routers:
+
+    frontend-app:
+      rule: "Host(`localhost`) && PathPrefix(`/`)"
+      entryPoints:
+        - web
+      service: frontend-service
+      priority: 1
+
     user-api:
       rule: "Host(`localhost`) && PathPrefix(`/api/user`)"
       entryPoints:
@@ -57,6 +65,11 @@ http:
           - cors-headers
 
   services:
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"
+
     user-service:
       loadBalancer:
         servers:
