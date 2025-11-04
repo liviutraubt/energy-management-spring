@@ -1,5 +1,12 @@
 package org.example.authenticationservice.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.example.authenticationservice.entity.Roles;
 import org.example.authenticationservice.security.JwtTokenService;
 import org.example.authenticationservice.service.PolicyService;
@@ -22,6 +29,21 @@ public class ForwardAuthController {
     private final JwtTokenService jwt;
     private final PolicyService policy;
 
+    @Operation(
+            summary = "Validează autentificarea pentru API Gateway (Forward Auth)",
+            description = "Acesta este un endpoint intern folosit de API Gateway (ex. Traefik) pentru a valida token-ul JWT " +
+                    "și a autoriza cererile către alte microservicii. Nu este destinat apelării directe de către client.",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "app-auth", description = "Token-ul JWT al utilizatorului", required = true, schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "X-Forwarded-Method", description = "Metoda HTTP originală a cererii (ex. GET, POST)", required = true, schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "X-Forwarded-Uri", description = "URI-ul original al cererii (ex. /api/device/1)", required = true, schema = @Schema(type = "string"))
+            }
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cerere validă și autorizată (inclusiv pentru OPTIONS)", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Neautorizat - Token 'app-auth' lipsește sau este invalid", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Acces interzis - Token-ul este valid, dar utilizatorul nu are rolul necesar pentru resursă", content = @Content)
+    })
     @RequestMapping(path = "/validate", method = { RequestMethod.GET, RequestMethod.POST,
             RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.OPTIONS })
     public void forwardAuth(HttpServletRequest req, HttpServletResponse res) throws IOException {
